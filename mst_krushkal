@@ -1,0 +1,62 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+#define MAX 100000
+vector <pair<int,int> > adj[MAX];
+vector < pair<int,pair<int,int> > > edges;
+int boss[MAX];
+
+int find_boss(int x)
+{
+    if(boss[x]==x)
+        return x;
+    return boss[x]=find_boss(boss[x]);
+}
+void unite(int a,int b)
+{
+    a=find_boss(a);
+    b=find_boss(b);
+    boss[a]=boss[b];
+
+}
+int cnt;
+
+int  mst_krushkal(int n)
+{
+    sort(edges.begin(),edges.end());
+    int len=edges.size();
+    for(int i=0; i<=n; i++)
+        boss[i]=i;
+    int cost=0;
+    for(int i=0; i<len; i++)
+    {
+        int a=edges[i].second.first;
+        int b=edges[i].second.second;
+        int w=edges[i].first;
+        int ba=find_boss(a);
+        int bb=find_boss(b);
+        if(ba!=bb)
+        {
+            cost+=w;
+            unite(a,b);
+
+        }
+    }
+    return cost;
+}
+
+
+int main()
+{
+    int v,e;
+    int x,y,w;
+    cin>>v>>e;
+    for(int i=0;i<e;i++)
+    {
+        cin>>x>>y>>w;
+        adj[x].push_back({y,w});
+        adj[y].push_back({x,w});
+        edges.push_back({w,{x,y}});
+    }
+    cout<<mst_krushkal(v)<<endl;
+}
