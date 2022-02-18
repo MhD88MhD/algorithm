@@ -1,0 +1,46 @@
+#include<bits/stdc++.h>
+using namespace std;
+vector <int> prefix_function(string &s)
+{
+    vector <int> p(s.size()); //1)p[i]->length of longest common prefix of substring s[0...i] that is also suffix of substring s[0...i]
+    for(int i=1;i<s.size();i++)
+    {
+        int j=p[i-1];       //2)j will store value for P[i]
+        while(j>0 and s[i]!=s[j]) j=p[j-1]; //takes j to the proper position
+        if(s[i]==s[j]) j++; //3) if s[i]==s[j]  p[i]=j+1
+        p[i]=j;
+    }
+    return p;
+}
+vector <int> z_function(string &s)
+{
+    vector <int> z(s.size(),0); //z[i]->length of longest common prefix of string s[0...n-1] and substring s[i...n-1];
+    for(int i=1,l=0,r=0;i<s.size();i++) //[l,r] tracks most recent substring match
+    {                                       //r tracks already compared area
+        if(i<=r) z[i]=min(r-i+1,z[i-l]); //if i is inside already compared area initialize z[i] with known value
+        while(i+z[i]<s.size() and s[z[i]]==s[i+z[i]]) z[i]++;//Then normally calculaty z[i] out of already known area
+        if(i+z[i]-1>r) l=i,r=i+z[i]-1;// upadating [l,r]
+    }
+    return z;
+}
+int main()
+{
+    string s="aabaabaaa";
+    vector <int> z=z_function(s);
+    vector <int> p=prefix_function(s);
+    cout<<"prefix array for string "<<s<<" "<<endl;
+    for(int i=0;i<p.size();i++) cout<<p[i]<<" ";cout<<endl;
+    cout<<"z array for string "<<s<<" : "<<endl;
+    for(int i=0;i<s.size();i++) cout<<z[i]<<" ";cout<<endl;
+
+    //   let us consider string T as text and P as pattern
+        /*For pattern matching using Z algo
+            calcultate z array for string XX=P+"*"+T
+            if( z[i+P.size()+1] == P.size() )then there is a match at T[i] so loop i in range[0,T.size() ) and check this condition
+        */
+    /* For pattern matching using KMP(prefix function)
+        calcultate z array for string XX=P+"*"+T
+        if(p[i] ==P.size() ) then there is a match at T[i-2*P.size()] so loop i in range[2*P.size(),XX.size()] in check this condition
+    */
+    return 0;
+}
